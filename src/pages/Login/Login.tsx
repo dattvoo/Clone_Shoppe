@@ -5,7 +5,7 @@ import Input from '../../components/Input'
 import { TLoginForm, schema } from '../../utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
-import { loginAccount } from '../../apis/auth.api'
+import authApi from '../../apis/auth.api'
 import { isAxiosUnprocessableEntityError } from '../../utils/utils'
 import { ErrorResponse } from '../../types/utils.type'
 import { AppContext } from '../../context/app.context'
@@ -24,7 +24,7 @@ export default function Login() {
     formState: { errors }
   } = useForm<TLoginForm>({ resolver: yupResolver(loginSchema) })
   const loginAccountMutation = useMutation({
-    mutationFn: (body: TLoginForm) => loginAccount(body)
+    mutationFn: (body: TLoginForm) => authApi.loginAccount(body)
   })
   const onSubmit = handleSubmit((data) => {
     loginAccountMutation.mutate(data, {
