@@ -3,13 +3,13 @@ import Popover from '../Popover'
 import { useContext } from 'react'
 import { AppContext } from '../../context/app.context'
 import { useMutation } from '@tanstack/react-query'
-import { logout } from '../../apis/auth.api'
+import authApi from '../../apis/auth.api'
 import path from '../../constants/path'
 export default function Header() {
   const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
 
   const logoutMutation = useMutation({
-    mutationFn: logout,
+    mutationFn: authApi.logout,
     onSuccess: () => {
       setIsAuthenticated(false)
     }
