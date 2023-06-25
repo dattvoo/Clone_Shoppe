@@ -12,16 +12,16 @@ export default function Input({
   type,
   errorMessage,
   name,
-  placeholder,
   register,
   rules,
   classNameInput = 'p-3 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm',
-  classNameError = 'mt-1 text-red-600 min-h-[1.25rem] text-sm'
+  classNameError = 'mt-1 text-red-600 min-h-[1.25rem] text-sm',
+  ...rest
 }: IProps) {
   const registerResult = register && name ? { ...register(name) } : {}
   return (
     <div className=''>
-      <input {...registerResult} type={type} placeholder={placeholder} className={classNameInput} />
+      <input {...registerResult} type={type} className={classNameInput} {...rest} />
       {errorMessage &&
         <div className={classNameError}>{errorMessage}</div>
       }

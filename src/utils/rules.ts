@@ -49,6 +49,14 @@ export const rules: TRules = {
     }
   }
 }
+function testMinMaxPrice(this: yup.TestContext<yup.AnyObject>) {
+  // const price_max = value
+  const { price_min, price_max } = this.parent as { price_min: string; price_max: string }
+  if (price_min !== '' && price_max !== '') {
+    return Number(price_max) >= Number(price_min)
+  }
+  return price_min !== '' || price_max !== ''
+}
 export const schema = yup
   .object({
     email: yup
@@ -62,7 +70,17 @@ export const schema = yup
       .string()
       .required('Password is required')
       .min(5, 'Password lenght from 5-100 characters')
-      .oneOf([yup.ref('password')], 'Confirm Password not Match')
+      .oneOf([yup.ref('password')], 'Confirm Password not Match'),
+    price_min: yup.string().test({
+      name: 'price-not-allowed',
+      message: 'Price not allow',
+      test: testMinMaxPrice
+    }),
+    price_max: yup.string().test({
+      name: 'price-not-allowed',
+      message: 'Price not allow',
+      test: testMinMaxPrice
+    })
   })
   .required()
 const loginSchema = schema.omit(['confirm_password'])
