@@ -1,15 +1,15 @@
 import React from 'react'
 import { Link, createSearchParams, useNavigate, useSearchParams } from 'react-router-dom'
-import path from '../../../constants/path'
-import Button from '../../../components/Button'
-import { Category } from '../../../types/category.type'
-import { QueryConfig } from '../ProductList'
+import path from '../../../../constants/path'
+import Button from '../../../../components/Button'
+import { Category } from '../../../../types/category.type'
+import { QueryConfig } from '../../ProductList'
 import classNames from 'classnames'
-import InputNumber from '../../../components/InputNumber/InputNumber'
+import InputNumber from '../../../../components/InputNumber/InputNumber'
 import { Controller, useForm } from 'react-hook-form'
-import { TFormSchema, schema } from '../../../utils/rules'
+import { TFormSchema, schema } from '../../../../utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { NoUndefineField } from '../../../types/utils.type'
+import { NoUndefineField } from '../../../../types/utils.type'
 interface ICategory {
   categories: Category[]
   queryConfig: QueryConfig

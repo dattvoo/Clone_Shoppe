@@ -1,10 +1,10 @@
 import React from 'react'
-import { QueryConfig } from '../ProductList'
-import { sortBy } from '../../../constants/product'
+import { QueryConfig } from '../../ProductList'
+import { sortBy } from '../../../../constants/product'
 import classNames from 'classnames'
-import { ProductListConfig } from '../../../types/product.type'
+import { ProductListConfig } from '../../../../types/product.type'
 import { Link, createSearchParams } from 'react-router-dom'
-import path from '../../../constants/path'
+import path from '../../../../constants/path'
 
 type TProps = {
   queryConfig: QueryConfig

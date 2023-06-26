@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
-import { Product as ProductTpye } from '../../../types/product.type'
-import { formatCurrency, formatNumberToSocialStyle } from '../../../utils/utils'
-import ProductRating from '../../../components/ProductRating'
+import { Product as ProductTpye } from '../../../../types/product.type'
+import { formatCurrency, formatNumberToSocialStyle } from '../../../../utils/utils'
+import ProductRating from '../../../../components/ProductRating'
 
 interface IProps {
   product: ProductTpye
