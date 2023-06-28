@@ -20,7 +20,6 @@ export default function ProductRating({
     }
     return '0%'
   }
-  console.log('Rating', rating);
 
   return (
     <div className='flex items-center'>
