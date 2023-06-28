@@ -8,6 +8,7 @@ import MainLayout from '../layouts/MainLayout'
 import Profile from '../pages/Profile'
 import { AppContext } from '../context/app.context'
 import path from '../constants/path'
+import ProductDetail from '../pages/ProductDetail'
 
 
 
@@ -29,6 +30,15 @@ export default function useRouterElement() {
       element: (
         <MainLayout>
           <ProductList />
+        </MainLayout>
+      )
+    },
+    {
+      path: '/:id',
+      index: true,
+      element: (
+        <MainLayout>
+          <ProductDetail />
         </MainLayout>
       )
     },
