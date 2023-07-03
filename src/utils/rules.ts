@@ -80,7 +80,8 @@ export const schema = yup
       name: 'price-not-allowed',
       message: 'Price not allow',
       test: testMinMaxPrice
-    })
+    }),
+    name: yup.string().required('Ten San Pham Phai Bat Buoc:').trim()
   })
   .required()
 const loginSchema = schema.omit(['confirm_password'])

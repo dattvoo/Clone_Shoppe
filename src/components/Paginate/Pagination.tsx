@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 import React from 'react'
 import { Link, createSearchParams } from 'react-router-dom'
-import { QueryConfig } from '../../pages/ProductList/ProductList'
 import path from '../../constants/path'
+import { QueryConfig } from '../../hooks/useQueryConfig'
 
 type IProps = {
   queryConfig: QueryConfig

@@ -1,13 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import productApi from '../../apis/product.api'
 import ProductRating from '../../components/ProductRating'
-import { formatCurrency, formatNumberToSocialStyle, rateSale } from '../../utils/utils'
+import { formatCurrency, formatNumberToSocialStyle, getIdFormNameId, rateSale } from '../../utils/utils'
 import InputNumber from '../../components/InputNumber/InputNumber'
 
 export default function ProductDetail() {
-  const { id } = useParams()
+  const { nameId } = useParams()
+  console.log(nameId)
+
+  const id = getIdFormNameId(nameId as string)
   const { data: productDetail } = useQuery({
     queryKey: ['product', id],
     queryFn: () => productApi.getProductDetail(id as string)
@@ -15,8 +18,11 @@ export default function ProductDetail() {
   const product = productDetail?.data.data
   const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
   const [activeImage, setActiveImage] = useState('')
-  const currentImages = useMemo(() => (product ? product.images.slice(...currentIndexImages) : []), [product, currentIndexImages])
-
+  const currentImages = useMemo(
+    () => (product ? product.images.slice(...currentIndexImages) : []),
+    [product, currentIndexImages]
+  )
+  const imageRef = useRef<HTMLImageElement>(null)
   useEffect(() => {
     if (product && product.image.length > 0) {
       setActiveImage(product.images[0])
@@ -39,21 +45,49 @@ export default function ProductDetail() {
       // setActiveImage(currentIndexImages[0].toString())
     }
   }
+  // Khi Hover vao Image ta se lay gia tri goc' cua Image
+  const handleZoom = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const domRect = e.currentTarget.getBoundingClientRect()
+
+    const image = imageRef.current as HTMLImageElement
+    const { naturalWidth, naturalHeight } = image
+    const { offsetX, offsetY } = e.nativeEvent
+    const top = offsetX * (1 - naturalHeight / domRect.height)
+    const left = offsetY * (1 - naturalWidth / domRect.width)
+    image.style.width = naturalWidth + 'px'
+    image.style.height = naturalHeight + 'px'
+    // Luc Css minh da~ set Max-Width: 100%, neen khi hover ta se set lai Max-Width
+    image.style.maxWidth = 'unset'
+    image.style.top = top + 'px'
+    image.style.left = left + 'px'
+  }
+  const handleRemoveZoom = () => {
+    imageRef.current?.removeAttribute('style')
+  }
   return (
     <div className='bg-gray-200 py-6'>
       <div className='container'>
         <div className='bg-white p-4 shadow'>
           <div className='grid grid-cols-12 gap-9'>
             <div className='col-span-5'>
-              <div className='relative w-full pt-[100%] shadow'>
+              {/* Them over-flow Hidden de khi ta hover vao anh se khong bi tran ra ngoai */}
+              <div
+                className='relative w-full overflow-hidden pt-[100%] shadow'
+                onMouseMove={handleZoom}
+                onMouseLeave={handleRemoveZoom}
+              >
                 <img
-                  className='absolute left-0 top-0 h-full bg-white object-cover'
+                  className='pointer-events-none absolute left-0 top-0 h-full bg-white object-cover hover:cursor-zoom-in'
                   src={activeImage}
                   alt={product.name}
+                  ref={imageRef}
                 />
               </div>
               <div className='relative mt-4 grid grid-cols-5 gap-1'>
-                <button className='absolute left-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white ' onClick={handlePrev}>
+                <button
+                  className='absolute left-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white '
+                  onClick={handlePrev}
+                >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
@@ -88,7 +122,10 @@ export default function ProductDetail() {
                     </div>
                   )
                 })}
-                <button className='absolute right-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white ' onClick={() => handleNext()}>
+                <button
+                  className='absolute right-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white '
+                  onClick={() => handleNext()}
+                >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'

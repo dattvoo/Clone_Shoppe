@@ -14,7 +14,6 @@ export default function ProductRating({
       return '100%'
     }
     if (order > rating && order - rating < 1) {
-      console.log('Last start', (rating - Math.floor(rating)) * 100 + '%');
 
       return (rating - Math.floor(rating)) * 100 + '%'
     }
