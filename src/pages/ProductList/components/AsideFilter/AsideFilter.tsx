@@ -3,13 +3,14 @@ import { Link, createSearchParams, useNavigate, useSearchParams } from 'react-ro
 import path from '../../../../constants/path'
 import Button from '../../../../components/Button'
 import { Category } from '../../../../types/category.type'
-import { QueryConfig } from '../../ProductList'
+// import { QueryConfig } from '../..'
 import classNames from 'classnames'
 import InputNumber from '../../../../components/InputNumber/InputNumber'
 import { Controller, useForm } from 'react-hook-form'
 import { TFormSchema, schema } from '../../../../utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { NoUndefineField } from '../../../../types/utils.type'
+import { QueryConfig } from '../../../../hooks/useQueryConfig'
 interface ICategory {
   categories: Category[]
   queryConfig: QueryConfig

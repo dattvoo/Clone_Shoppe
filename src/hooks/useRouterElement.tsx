@@ -34,7 +34,7 @@ export default function useRouterElement() {
       )
     },
     {
-      path: '/:id',
+      path: '/:nameId',
       index: true,
       element: (
         <MainLayout>
