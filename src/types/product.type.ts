@@ -9,7 +9,10 @@ export interface Product {
   view: number
   name: string
   description: string
-  category: string
+  category: {
+    name?: string
+    _id: string
+  }
   image: string
   createdAt: string
   updatedAt: string
