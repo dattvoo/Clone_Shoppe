@@ -5,10 +5,11 @@ import productApi from '../../apis/product.api'
 import ProductRating from '../../components/ProductRating'
 import { formatCurrency, formatNumberToSocialStyle, getIdFormNameId, rateSale } from '../../utils/utils'
 import InputNumber from '../../components/InputNumber/InputNumber'
+import { ProductListConfig } from '../../types/product.type'
+import Product from '../ProductList/components/Product'
 
 export default function ProductDetail() {
   const { nameId } = useParams()
-  console.log(nameId)
 
   const id = getIdFormNameId(nameId as string)
   const { data: productDetail } = useQuery({
@@ -22,6 +23,18 @@ export default function ProductDetail() {
     () => (product ? product.images.slice(...currentIndexImages) : []),
     [product, currentIndexImages]
   )
+  // Get Product tuong tu
+  const queryConfig: ProductListConfig = { page: 1, limit: 20, category: product?.category._id }
+  const { data: productData } = useQuery({
+    queryKey: ['products', queryConfig],
+    queryFn: () => {
+      return productApi.getProductList(queryConfig)
+    },
+    enabled: Boolean(product),
+    staleTime: 5 * 60 * 1000
+  })
+  // console.log(product?.category);
+
   const imageRef = useRef<HTMLImageElement>(null)
   useEffect(() => {
     if (product && product.image.length > 0) {
@@ -64,6 +77,7 @@ export default function ProductDetail() {
   const handleRemoveZoom = () => {
     imageRef.current?.removeAttribute('style')
   }
+
   return (
     <div className='bg-gray-200 py-6'>
       <div className='container'>
@@ -239,6 +253,15 @@ export default function ProductDetail() {
                 __html: product.description
               }}
             ></div>
+          </div>
+        </div>
+        <div className='mt-8'>
+          <div className='container'>
+            <h1 className='capitalize '>San Pham tuong tu</h1>
+            <div className='mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
+              {productData &&
+                productData.data.data.products.map((product) => <Product key={product._id} product={product} />)}
+            </div>
           </div>
         </div>
       </div>

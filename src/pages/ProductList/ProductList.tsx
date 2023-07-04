@@ -15,13 +15,15 @@ export default function ProductList() {
     queryFn: () => {
       return productApi.getProductList(queryConfig as ProductListConfig)
     },
-    keepPreviousData: true
+    keepPreviousData: true,
+    staleTime: 5 * 60 * 1000
   })
+
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
     queryFn: () => {
       return categoryApi.getCategories()
-    }
+    },
   })
   return (
     <div className='bg-gray-200 py-6'>
