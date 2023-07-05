@@ -2,7 +2,7 @@ import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import Popover from '../Popover'
 import { useContext } from 'react'
 import { AppContext } from '../../context/app.context'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import authApi from '../../apis/auth.api'
 import path from '../../constants/path'
 import useQueryConfig from '../../hooks/useQueryConfig'
@@ -10,6 +10,9 @@ import { useForm } from 'react-hook-form'
 import { TFormSchema, schema } from '../../utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { omit } from 'lodash'
+import { purchaseStatus } from '../../constants/purchase'
+import purchaseApi from '../../apis/purchase.api'
+import { formatCurrency } from '../../utils/utils'
 
 type FormData = Pick<TFormSchema, 'name'>
 const nameSchema = schema.pick(['name'])
@@ -44,6 +47,15 @@ export default function Header() {
       ).toString()
     })
   })
+  // Khi chungs ta chuyen trang thi header chi bi re-render
+  // Chu khong bi unmout-mounting again
+  // (Tat nhien tru truong hop Logout roi nhay sang RegisterLayout roi nhay vao lai)
+  // Nen cac Query nay se bi inactive => khong bi goi lai => khong can thiet phai set statle: infinity
+  const { data: purchaseIncartData } = useQuery({
+    queryKey: ['purchase', { status: purchaseStatus.inCart }],
+    queryFn: () => purchaseApi.getPuchaseList({ status: purchaseStatus.inCart })
+  })
+  const purchasesInCart = purchaseIncartData?.data.data
   return (
     <div className='bg-[linear-gradient(-180deg,#f53d2d,#f63)] pb-5 pt-2 text-white'>
       <div className='container'>
@@ -158,29 +170,28 @@ export default function Header() {
                 <div className='p-2'>
                   <h3 className='capitalize text-gray-400'>San pham moi them</h3>
                   <div className='mt-5'>
-                    <div className='mt-4 flex'>
-                      <div className='flex-shrink-0'>
-                        <img
-                          src='https://down-vn.img.susercontent.com/file/vn-50009109-c89c7e67a9eae3a6c13085aee737f130'
-                          alt='anh'
-                          className='h-11 w-11 object-cover'
-                        />
-                      </div>
-                      <div className='ml-2 flex-grow overflow-hidden'>
-                        <div className='truncate'>
-                          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut, harum! Laboriosam quod dolorem
-                          voluptate voluptatem optio facilis sunt, laborum delectus reprehenderit cum possimus atque
-                          eveniet unde, minima corporis distinctio cumque.
-                        </div>
-                      </div>
-                      <div className='ml-2 flex-shrink-0'>
-                        <span className='text-orange'>469.000</span>
-                      </div>
-                    </div>
+                    {purchasesInCart &&
+                      purchasesInCart?.slice(0, 5).map((purchase) => {
+                        return (
+                          <div className='mt-4 flex py-2 hover:bg-slate-100' key={purchase._id}>
+                            <div className='flex-shrink-0'>
+                              <img src={purchase.product.image} alt='purchase img' className='h-11 w-11 object-cover' />
+                            </div>
+                            <div className='ml-2 flex-grow overflow-hidden'>
+                              <div className='truncate'>{purchase.product.name}</div>
+                            </div>
+                            <div className='ml-2 flex-shrink-0'>
+                              <span className='text-orange'>đ{formatCurrency(purchase.price)}</span>
+                            </div>
+                          </div>
+                        )
+                      })}
                   </div>
                 </div>
                 <div className='mt-6 flex items-center justify-between px-3 py-5'>
-                  <div className='text-xs capitalize'>{1} them Hang Vao Gio</div>
+                  <div className='text-xs capitalize'>
+                    {Number(purchasesInCart?.length) > 5 ? Number(purchasesInCart?.length) - 5 : 0} them Hang Vao Gio
+                  </div>
                   <button className='rounded-sm bg-orange px-6 py-3 text-sm text-white hover:bg-opacity-80'>
                     Xem Gio Hang
                   </button>

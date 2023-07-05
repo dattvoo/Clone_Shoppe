@@ -1,13 +1,17 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import productApi from '../../apis/product.api'
+import purchaseApi from '../../apis/purchase.api'
 import ProductRating from '../../components/ProductRating'
-import { formatCurrency, formatNumberToSocialStyle, getIdFormNameId, rateSale } from '../../utils/utils'
-import InputNumber from '../../components/InputNumber/InputNumber'
 import { ProductListConfig } from '../../types/product.type'
+import { formatCurrency, formatNumberToSocialStyle, getIdFormNameId, rateSale } from '../../utils/utils'
 import Product from '../ProductList/components/Product'
 import QuantityController from '../../components/QuantityController'
+import { AddToCart } from '../../types/purchase.type'
+import { queryClient } from '../../main'
+import { purchaseStatus } from '../../constants/purchase'
+import { toast } from 'react-toastify'
 
 export default function ProductDetail() {
   const { nameId } = useParams()
@@ -34,7 +38,9 @@ export default function ProductDetail() {
     enabled: Boolean(product),
     staleTime: 5 * 60 * 1000
   })
-  // console.log(product?.category);
+  const addToCartMuation = useMutation({
+    mutationFn: purchaseApi.addToCart
+  })
 
   const imageRef = useRef<HTMLImageElement>(null)
   useEffect(() => {
@@ -42,11 +48,13 @@ export default function ProductDetail() {
       setActiveImage(product.images[0])
     }
   }, [product])
+
   const chooseImageActive = (img: string) => {
     setActiveImage(img)
   }
 
   if (!product) return null
+
   const handleNext = () => {
     if (currentIndexImages[1] < product.images.length) {
       setCurrentIndexImages((prev) => [prev[0] + 1, prev[1] + 1])
@@ -75,11 +83,23 @@ export default function ProductDetail() {
     image.style.top = top + 'px'
     image.style.left = left + 'px'
   }
+
   const handleRemoveZoom = () => {
     imageRef.current?.removeAttribute('style')
   }
   const handleBuyCount = (value: number) => {
     setBuyCount(value)
+  }
+  const addTocart = () => {
+    addToCartMuation.mutate({ buy_count: buyCount, product_id: product._id }, {
+      onSuccess: (data) => {
+        toast.success(data.data.message)
+        queryClient.invalidateQueries({
+          queryKey: ['purchase', { status: purchaseStatus.inCart }]
+        })
+      }
+    }
+    )
   }
   return (
     <div className='bg-gray-200 py-6'>
@@ -197,7 +217,7 @@ export default function ProductDetail() {
                 <div className='ml-6 text-sm text-gray-500'>{product.quantity} co san</div>
               </div>
               <div className='mt-8 flex items-center'>
-                <button className='flex h-12 items-center justify-center rounded-sm border border-orange bg-orange/10 px-5 capitalize text-orange shadow-sm  hover:bg-orange/10'>
+                <button className='flex h-12 items-center justify-center rounded-sm border border-orange bg-orange/10 px-5 capitalize text-orange shadow-sm  hover:bg-orange/10' onClick={addTocart}>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
