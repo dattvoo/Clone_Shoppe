@@ -10,8 +10,12 @@ import { isAxiosUnprocessableEntityError } from '../../utils/utils'
 import { ErrorResponse } from '../../types/utils.type'
 import { AppContext } from '../../context/app.context'
 import Button from '../../components/Button'
+import { setProfileToLS } from '../../utils/auth'
 
-const loginSchema = schema.omit(['confirm_password'])
+// const loginSchema = schema.omit(['confirm_password'])
+type FormData = Pick<TLoginForm, 'email' | 'password'>
+const loginSchema = schema.pick(['email', 'password'])
+
 export default function Login() {
   const { setIsAuthenticated } = useContext(AppContext)
   const navigate = useNavigate()
@@ -21,24 +25,28 @@ export default function Login() {
     handleSubmit,
     setError,
     watch,
-    formState: { errors }
-  } = useForm<TLoginForm>({ resolver: yupResolver(loginSchema) })
+    formState: { errors },
+  } = useForm<FormData>({ resolver: yupResolver(loginSchema) })
   const loginAccountMutation = useMutation({
-    mutationFn: (body: TLoginForm) => authApi.loginAccount(body)
+    mutationFn: (body: FormData) => authApi.loginAccount(body)
   })
   const onSubmit = handleSubmit((data) => {
+    console.log('checkin')
+
     loginAccountMutation.mutate(data, {
-      onSuccess: () => {
+      onSuccess: (data) => {
         setIsAuthenticated(true)
+        setProfileToLS(data.data.data.user)
         navigate('/')
       },
       onError: (error) => {
+        console.log('asdasdasd')
         if (isAxiosUnprocessableEntityError<ErrorResponse<TLoginForm>>(error)) {
           const formError = error.response?.data.data
           if (formError) {
             Object.keys(formError).forEach((key) => {
-              setError(key as keyof TLoginForm, {
-                message: formError[key as keyof TLoginForm],
+              setError(key as keyof FormData, {
+                message: formError[key as keyof FormData],
                 type: 'Server'
               })
             })
@@ -54,7 +62,7 @@ export default function Login() {
       <div className='container'>
         <div className='grid grid-cols-1 py-12 lg:grid-cols-5 lg:py-32 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
-            <form className='p-10 rounded bg-white shadow-sm' onSubmit={onSubmit} noValidate>
+            <form className='rounded bg-white p-10 shadow-sm' onSubmit={onSubmit} noValidate>
               <p className='text-2xl'>Đăng Nhập</p>
               <Input
                 name='email'
@@ -78,7 +86,8 @@ export default function Login() {
               <div className='mt-3'>
                 <Button
                   type='submit'
-                  className='w-full uppercase bg-red-500 text-center py-4 text-white rounded-sm  hover:bg-red-600'
+                  onClick={onSubmit}
+                  className='w-full rounded-sm bg-red-500 py-4 text-center uppercase text-white  hover:bg-red-600'
                   isLoading={loginAccountMutation.isLoading}
                   disabled={loginAccountMutation.isLoading}
                 >
@@ -87,7 +96,7 @@ export default function Login() {
               </div>
               <div className='mt-8 flex items-center justify-center'>
                 <span className='text-sm text-slate-500'>Ban co tai khoan chua?</span>
-                <Link to='/register' className='text-sm  text-red-400 ml-1'>
+                <Link to='/register' className='ml-1  text-sm text-red-400'>
                   Dang Ki
                 </Link>
               </div>
