@@ -11,6 +11,7 @@ import { TFormSchema, schema } from '../../../../utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { NoUndefineField } from '../../../../types/utils.type'
 import { QueryConfig } from '../../../../hooks/useQueryConfig'
+import InputV2 from '../../../../components/InputV2'
 interface ICategory {
   categories: Category[]
   queryConfig: QueryConfig
@@ -105,7 +106,7 @@ export default function AsideFilter({ categories, queryConfig }: ICategory) {
         <div className=''>Khoan Gia</div>
         <form className='mt-2' onSubmit={onSubmit}>
           <div className='flex items-start'>
-            <Controller
+            {/* <Controller
               control={control}
               name='price_min'
               render={({ field }) => (
@@ -121,6 +122,17 @@ export default function AsideFilter({ categories, queryConfig }: ICategory) {
                   }}
                 />
               )}
+            /> */}
+            <InputV2
+              control={control}
+              type='number'
+              name='price_min'
+              placeholder='Tu'
+              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
+              classNameError='hidden'
+              onChange={() => {
+                trigger('price_max')
+              }}
             />
             <div className='mx-2 mt-2 shrink-0'>-</div>
             <Controller

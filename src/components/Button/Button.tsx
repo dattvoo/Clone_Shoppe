@@ -7,7 +7,6 @@ interface IProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export default function Button(props: IProps) {
   const { className, isLoading, disabled, children, ...rest } = props
   const newClassName = disabled ? className + ' cursor-not-allowed' : className
-  console.log('Type of button', { ...rest })
   return (
     <button disabled={disabled} className={`${newClassName} flex justify-center items-center`} {...rest}>
       {isLoading && (
